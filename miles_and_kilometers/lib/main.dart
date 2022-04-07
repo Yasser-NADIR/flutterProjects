@@ -14,9 +14,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  double? _numberFom;
-  String? _startMeasure;
-  String? _convertedMeasure;
+  late double _numberFom;
+  late String _startMeasure;
+  late String _convertedMeasure;
+  String _resultMessage="";
+
   final _measures = <String>[
     "meters",
     "kilometers",
@@ -110,7 +112,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                 )).toList(),
                 onChanged: (newValue) => setState(() {
-                  _startMeasure = newValue;
+                  _startMeasure = newValue!;
                 }),
                 value: _startMeasure,
               ),
@@ -130,7 +132,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                 )).toList(),
                 onChanged: (newValue) => setState(() {
-                  _convertedMeasure = newValue;
+                  _convertedMeasure = newValue!;
                 }),
                 value: _convertedMeasure,
               ),
@@ -140,11 +142,14 @@ class _MyAppState extends State<MyApp> {
                   "Convert",
                   style: inputStyle,
                 ),
-                onPressed: () => true,
+                onPressed: (){
+                  if(_startMeasure.isEmpty || _convertedMeasure.isEmpty || _numberFom==0) return ;
+                  convert(_numberFom, _startMeasure, _convertedMeasure);
+                },
               ),
               spacer,
               Text(
-                (_numberFom==null) ? "" : _numberFom.toString(),
+                (_resultMessage==null) ? "" : _resultMessage,
                 style: labelStyle,
               ),
               spacer
@@ -163,9 +168,19 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  double convert(double value, String from, String to) {
-    int inFrom = _measureMap![from];
-    return 0;
+  void convert(double value, String from, String to) {
+    int _numberFrom = _measureMap[from]!;
+    int numberTo = _measureMap[to]!;
+    double result = _formula[_numberFrom][numberTo]*value;
+    if (result == 0) {
+      _resultMessage = 'This conversion cannot be performed';
+    }
+    else {
+      _resultMessage = '${_numberFrom.toString()} $_startMeasure are ${result.toString()} $_convertedMeasure';
+    }
+    setState(() {
+      _resultMessage = _resultMessage;
+    });
   }
 
 }
